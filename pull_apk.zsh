@@ -25,13 +25,6 @@ fi
 
 PACKAGE_NAME=$(adb shell pm list packages | grep -i $APP | cut -d: -f2)
 
-# Also works
-#if [[ -z $PACKAGE_NAME ]]; then
-#    printf "No package found\n" >&2
-#    exit 1
-#fi
-
-#TODO: handle the case of too many results
 BASEAPK_PATH=$(adb shell pm path $PACKAGE_NAME | grep -i base | cut -d: -f2)
 
 if [[ -d $2 ]]; then
