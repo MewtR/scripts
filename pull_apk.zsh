@@ -11,12 +11,25 @@ fi
 APP=$1
 NAME="${1}_base.apk"
 
-PACKAGE_NAME=$(adb shell pm list packages | grep -i $APP | cut -d: -f2)
+RESULTS=$(adb shell pm list packages | grep -i $APP | cut -d: -f2 | wc -l)
 
-if [[ -z $PACKAGE_NAME ]]; then
+if [[ $RESULTS -gt 1 ]]; then
+    printf "Too many hits, be more specific\n" >&2
+    exit 1
+fi
+
+if [[ $RESULTS -eq 0 ]]; then
     printf "No package found\n" >&2
     exit 1
 fi
+
+PACKAGE_NAME=$(adb shell pm list packages | grep -i $APP | cut -d: -f2)
+
+# Also works
+#if [[ -z $PACKAGE_NAME ]]; then
+#    printf "No package found\n" >&2
+#    exit 1
+#fi
 
 #TODO: handle the case of too many results
 BASEAPK_PATH=$(adb shell pm path $PACKAGE_NAME | grep -i base | cut -d: -f2)
