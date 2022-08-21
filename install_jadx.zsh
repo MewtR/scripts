@@ -1,8 +1,14 @@
 #!/usr/bin/zsh
 
+# Can be called like /some/path/install_jadx.zsh $PWD
+if [[ $# -ne 1 ]]; then
+    printf "Pass in an install directory\n" >&2
+    exit 1
+fi
+
 JADX=jadx
 JADXGUI=jadx-gui
-INSTALL_DIRECTORY=~/Documents/tools/jadx
+INSTALL_DIRECTORY=$1
 BIN_DIRECTORY=~/bin
 cd $INSTALL_DIRECTORY
 
