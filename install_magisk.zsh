@@ -9,9 +9,9 @@ REPO=topjohnwu/Magisk
 TAG=$(curl -s https://api.github.com/repos/${REPO}/releases/latest | jq -r '.tag_name')
 printf "tag name: %s\n" $TAG
 
-NAME=$(curl -s https://api.github.com/repos/topjohnwu/Magisk/releases/latest | jq -r '.assets[] | select(.name|match("^Magisk")) | .name')
+NAME=$(curl -s https://api.github.com/repos/${REPO}/releases/latest | jq -r '.assets[] | select(.name|match("^Magisk")) | .name')
 printf "Downloading %s\n" $NAME 
-MAGISK_DOWNLOAD_URL=$(curl -s https://api.github.com/repos/topjohnwu/Magisk/releases/latest | jq -r '.assets[] | select(.name|match("^Magisk")) | .browser_download_url')
+MAGISK_DOWNLOAD_URL=$(curl -s https://api.github.com/repos/${REPO}/releases/latest | jq -r '.assets[] | select(.name|match("^Magisk")) | .browser_download_url')
 
 wget -O $NAME $MAGISK_DOWNLOAD_URL
 
