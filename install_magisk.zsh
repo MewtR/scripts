@@ -65,9 +65,9 @@ adb shell rm $DOWNLOAD_DIRECTORY/$MAGISK_IMAGE
 
 # Reboot into fastboot
 adb reboot bootloader
-sleep 5
+sleep 1
 fastboot flash boot $MAGISK_IMAGE
-sleep 5
+sleep 1
 fastboot flash vbmeta --disable-verity --disable-verification output/vbmeta.img
-sleep 5
+sleep 1
 fastboot reboot
