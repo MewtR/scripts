@@ -7,13 +7,13 @@ if [[ $# -ne 1 ]]; then
 fi
 
 JADX=jadx
-JADXGUI=jadx-gui
+JADXGUI=$JADX-gui
 INSTALL_DIRECTORY=$1
 BIN_DIRECTORY=~/bin
 cd $INSTALL_DIRECTORY
 
 # Download
-REPO=skylot/jadx
+REPO=skylot/$JADX
 TAG=$(curl -s https://api.github.com/repos/${REPO}/releases/latest | jq -r '.tag_name')
 printf "tag name: %s\n" $TAG
 
