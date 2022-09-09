@@ -29,6 +29,7 @@ mv $NAME_WITHOUT_EXTENSION $FRIDA_SERVER
 # install directory on my phone
 FRIDA_INSTALL_PATH=/data/local/tmp/$FRIDA_SERVER
 
+adb root
 adb push $FRIDA_SERVER $FRIDA_INSTALL_PATH
 adb shell chmod 755 $FRIDA_INSTALL_PATH
 adb shell $FRIDA_INSTALL_PATH &
