@@ -15,6 +15,7 @@ MAGISK_DOWNLOAD_URL=$(curl -s https://api.github.com/repos/${REPO}/releases/late
 
 wget -O $NAME $MAGISK_DOWNLOAD_URL
 
+adb root
 # install
 adb install $NAME
 
