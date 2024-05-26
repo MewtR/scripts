@@ -5,9 +5,9 @@ ORG=revanced
 CLI="revanced-cli"
 INTEGRATIONS="revanced-integrations"
 PATCHES="revanced-patches"
-PATCHER="revanced-patcher"
+#PATCHER="revanced-patcher"
 
-REPOS=($CLI $INTEGRATIONS $PATCHES $PATCHER)
+REPOS=($CLI $INTEGRATIONS $PATCHES) #$PATCHER)
 
 INDEX=0
 REPOS_LENGTH=${#REPOS[@]}
