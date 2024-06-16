@@ -76,3 +76,6 @@ sleep 1
 fastboot flash vbmeta --disable-verity --disable-verification $VBMETA_IMG
 sleep 1
 fastboot reboot
+
+# Clean install directory
+rm -rf $INSTALL_DIRECTORY
