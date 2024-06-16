@@ -1,4 +1,4 @@
-#!/usr/bin/zsh
+#!/usr/bin/sh
 
 INSTALL_DIRECTORY=~/tmp/magisk_install
 mkdir -p $INSTALL_DIRECTORY
@@ -35,10 +35,10 @@ wget -O $PACKAGE_NAME_ZIP $LINEAGEOS_DOWNLOAD_URL
 MYSHA256=$(sha256sum $PACKAGE_NAME_ZIP | cut -d ' ' -f1)
 printf "mysha256 %s\n" $MYSHA256
 
-if [[ $SHA256 != $MYSHA256 ]] {
+if [ $SHA256 != $MYSHA256 ]; then 
     printf "sha256 mismatch, aborting..."
     exit 1
-}
+fi
 
 # Extracting proprietary blobs 
 # See https://wiki.lineageos.org/extracting_blobs_from_zips#extracting-proprietary-blobs-from-payload-based-otas
@@ -58,7 +58,8 @@ adb push $BOOT_IMG $DOWNLOAD_DIRECTORY/$BOOT_IMG
 # got com.topjohnwu.magisk/.ui.MainActivity from doing ( adb shell ) dumpsys package com.topjohnwu.magisk | grep -i activity
 adb shell am start -n com.topjohnwu.magisk/.ui.MainActivity
 
-read -s -k $'?Patch boot.img in the Magisk app then press any key to continue.\n'
+printf "Patch boot.img in the Magisk app then press any key to continue.\n"
+read $RESPONSE
 
 MAGISK_IMAGE=$(adb shell ls $DOWNLOAD_DIRECTORY | grep -i magisk)
 printf "Magisk image is %s\n" $MAGISK_IMAGE
