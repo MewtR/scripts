@@ -1,7 +1,7 @@
 #!/usr/bin/zsh
 
 # local install directory
-INSTALL_DIRECTORY=/tmp/frida_install
+INSTALL_DIRECTORY=~/tmp/frida_install
 
 FRIDA=frida
 FRIDA_SERVER=$FRIDA-server

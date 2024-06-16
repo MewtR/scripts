@@ -1,6 +1,6 @@
 #!/usr/bin/zsh
 
-INSTALL_DIRECTORY=/tmp/magisk_install
+INSTALL_DIRECTORY=~/tmp/magisk_install
 mkdir -p $INSTALL_DIRECTORY
 cd $INSTALL_DIRECTORY
 
@@ -45,19 +45,23 @@ if [[ $SHA256 != $MYSHA256 ]] {
 PAYLOAD_FILE=payload.bin
 unzip $PACKAGE_NAME_ZIP $PAYLOAD_FILE
 
-git clone --depth 1 https://github.com/LineageOS/scripts
-python scripts/update-payload-extractor/extract.py $PAYLOAD_FILE
+PARTITION_BOOT=boot
+PARTITION_VBMETA=vbmeta
+git clone --depth 1 https://github.com/LineageOS/android_prebuilts_extract-tools android/prebuilts/extract-tools
 
-BOOT_IMG=boot.img
+./android/prebuilts/extract-tools/linux-x86/bin/ota_extractor --partitions $PARTITION_BOOT,$PARTITION_VBMETA --payload $PAYLOAD_FILE
+
+BOOT_IMG=${PARTITION_BOOT}.img
+VBMETA_IMG=${PARTITION_VBMETA}.img
 DOWNLOAD_DIRECTORY=/sdcard/Download
-adb push output/$BOOT_IMG $DOWNLOAD_DIRECTORY/$BOOT_IMG
+adb push $BOOT_IMG $DOWNLOAD_DIRECTORY/$BOOT_IMG
 # got com.topjohnwu.magisk/.ui.MainActivity from doing ( adb shell ) dumpsys package com.topjohnwu.magisk | grep -i activity
 adb shell am start -n com.topjohnwu.magisk/.ui.MainActivity
 
 read -s -k $'?Patch boot.img in the Magisk app then press any key to continue.\n'
 
 MAGISK_IMAGE=$(adb shell ls $DOWNLOAD_DIRECTORY | grep -i magisk)
-print "Magisk image is %s\n" $MAGISK_IMAGE
+printf "Magisk image is %s\n" $MAGISK_IMAGE
 adb pull $DOWNLOAD_DIRECTORY/$MAGISK_IMAGE .
 
 # Clean up the images
@@ -69,6 +73,6 @@ adb reboot bootloader
 sleep 1
 fastboot flash boot $MAGISK_IMAGE
 sleep 1
-fastboot flash vbmeta --disable-verity --disable-verification output/vbmeta.img
+fastboot flash vbmeta --disable-verity --disable-verification $VBMETA_IMG
 sleep 1
 fastboot reboot
