@@ -48,6 +48,9 @@ if [ $? -ne 0 ]; then
 fi
 
 PACKAGE_NAME=$(aapt dump badging $NAME | grep 'package: name=' | cut -d \' -f2) # this would be com.termux
+FILES_PATH=/data/data/$PACKAGE_NAME/files
+HOME_PATH=$FILES_PATH/home
+
 adb shell pm grant $PACKAGE_NAME android.permission.WRITE_EXTERNAL_STORAGE
 
 # Now comes the tricky part, 
@@ -56,7 +59,7 @@ adb shell pm grant $PACKAGE_NAME android.permission.WRITE_EXTERNAL_STORAGE
 
 # Main activity for termux is called the HomeActivity
 # xargs to remove leading whitespace from dumpsys' output
-HOME_ACTIVITY=$(adb shell dumpsys package $PACKAGE_NAME | grep -i homeactivity | xargs | cut -d ' ' -f2)
+HOME_ACTIVITY=$(adb shell dumpsys package $PACKAGE_NAME | grep -i homeactivity | xargs | cut -d ' ' -f2) # com.termux/.HomeActivity
 adb shell am start -n $HOME_ACTIVITY
 
 INDEX=0
@@ -68,16 +71,44 @@ done
 # Need the following to get binairies such as termux-setup-storage
 SETUP_SCRIPT=termux_setup.sh
 SETUP_SCRIPT_PATH=/data/data/$PACKAGE_NAME/files/home/$SETUP_SCRIPT
-if [ ! -f $SETUP_SCRIPT ]; then
-    touch $SETUP_SCRIPT
+if [ -f $SETUP_SCRIPT ]; then
+    rm $SETUP_SCRIPT
 fi
+
+touch $SETUP_SCRIPT
 
 printf "#!/bin/sh\n" >> $SETUP_SCRIPT
 printf "\n" >> $SETUP_SCRIPT
-printf "run-as $PACKAGE_NAME /data/data/$PACKAGE_NAME/files/usr/bin/sh -c " >> $SETUP_SCRIPT
-printf "'export PATH=/data/data/$PACKAGE_NAME/files/usr/bin:$PATH;" >> $SETUP_SCRIPT
-printf "export LD_PRELOAD=/data/data/$PACKAGE_NAME/files/usr/lib/libtermux-exec.so;" >> $SETUP_SCRIPT
-printf "termux-setup-storage'\n" >> $SETUP_SCRIPT
+printf "run-as $PACKAGE_NAME $FILES_PATH/usr/bin/sh -c " >> $SETUP_SCRIPT
+printf "'export PATH=$FILES_PATH/usr/bin:$PATH;\n" >> $SETUP_SCRIPT
+printf "export LD_PRELOAD=$FILES_PATH/usr/lib/libtermux-exec.so;\n" >> $SETUP_SCRIPT
+printf "\n\n" >> $SETUP_SCRIPT
+
+# Following don't solve the issue with the zim install
+#printf "cd $HOME_PATH" >> $SETUP_SCRIPT
+#printf "export HOME=$HOME_PATH" >> $SETUP_SCRIPT
+
+printf "termux-setup-storage\n" >> $SETUP_SCRIPT
+printf "\n" >> $SETUP_SCRIPT
+printf "# termux-change-repo will open up a dialog that will ask\n" >> $SETUP_SCRIPT
+printf "# you to select repos but you can just send in \\\n\\\n\n" >> $SETUP_SCRIPT
+printf "# to automatically select the default\n" >> $SETUP_SCRIPT
+printf "printf \'\\\n\\\n\' | termux-change-repo\n" >> $SETUP_SCRIPT
+printf "\n" >> $SETUP_SCRIPT
+printf "yes Y | pkg upgrade\n" >> $SETUP_SCRIPT
+printf "pkg update\n" >> $SETUP_SCRIPT
+printf "yes Y | pkg install git openssh vim zsh python python-pip\n" >> $SETUP_SCRIPT
+printf "chsh -s zsh\n" >> $SETUP_SCRIPT
+printf "export ZIM_HOME=$FILES_PATH/home/.zim\n" >> $SETUP_SCRIPT
+printf "curl -fsSL https://raw.githubusercontent.com/zimfw/install/master/install.zsh | /data/data/$PACKAGE_NAME/files/usr/bin/zsh\n" >> $SETUP_SCRIPT
+printf "\n" >> $SETUP_SCRIPT
+printf "# Comment out zsh-syntax-highlighting because it throws errors for whatever reason\n" >> $SETUP_SCRIPT
+printf "sed -i \'s/zmodule\ zsh-users\/zsh-syntax-highlighting/\#zmodule\ zsh-users\/zsh-syntax-highlighting/g\' ~/.zimrc\n" >> $SETUP_SCRIPT
+printf "\n" >> $SETUP_SCRIPT
+printf "# Install fzf\n" >> $SETUP_SCRIPT
+printf "git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf\n" >> $SETUP_SCRIPT
+printf "yes | ~/.fzf/install\n" >> $SETUP_SCRIPT
+printf "pip install yt-dlp'" >> $SETUP_SCRIPT
 
 adb push $SETUP_SCRIPT $SETUP_SCRIPT_PATH
 adb shell exec /system/bin/sh $SETUP_SCRIPT_PATH
