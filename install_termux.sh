@@ -85,8 +85,8 @@ printf "export LD_PRELOAD=$FILES_PATH/usr/lib/libtermux-exec.so;\n" >> $SETUP_SC
 printf "\n\n" >> $SETUP_SCRIPT
 
 # Following don't solve the issue with the zim install
-#printf "cd $HOME_PATH" >> $SETUP_SCRIPT
-#printf "export HOME=$HOME_PATH" >> $SETUP_SCRIPT
+printf "cd $HOME_PATH\n" >> $SETUP_SCRIPT
+printf "export HOME=$HOME_PATH\n" >> $SETUP_SCRIPT
 
 printf "termux-setup-storage\n" >> $SETUP_SCRIPT
 printf "\n" >> $SETUP_SCRIPT
@@ -99,11 +99,11 @@ printf "yes Y | pkg upgrade\n" >> $SETUP_SCRIPT
 printf "pkg update\n" >> $SETUP_SCRIPT
 printf "yes Y | pkg install git openssh vim zsh python python-pip\n" >> $SETUP_SCRIPT
 printf "chsh -s zsh\n" >> $SETUP_SCRIPT
-printf "export ZIM_HOME=$FILES_PATH/home/.zim\n" >> $SETUP_SCRIPT
+printf "export ZIM_HOME=$HOME_PATH/.zim\n" >> $SETUP_SCRIPT
 printf "curl -fsSL https://raw.githubusercontent.com/zimfw/install/master/install.zsh | /data/data/$PACKAGE_NAME/files/usr/bin/zsh\n" >> $SETUP_SCRIPT
 printf "\n" >> $SETUP_SCRIPT
 printf "# Comment out zsh-syntax-highlighting because it throws errors for whatever reason\n" >> $SETUP_SCRIPT
-printf "sed -i \'s/zmodule\ zsh-users\/zsh-syntax-highlighting/\#zmodule\ zsh-users\/zsh-syntax-highlighting/g\' ~/.zimrc\n" >> $SETUP_SCRIPT
+# printf "sed --debug -i \'s/zmodule\ zsh-users\/zsh-syntax-highlighting/\#zmodule\ zsh-users\/zsh-syntax-highlighting/g\' ~/.zimrc\n" >> $SETUP_SCRIPT # Can't get this to work
 printf "\n" >> $SETUP_SCRIPT
 printf "# Install fzf\n" >> $SETUP_SCRIPT
 printf "git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf\n" >> $SETUP_SCRIPT
