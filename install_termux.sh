@@ -97,7 +97,7 @@ printf "printf \'\\\n\\\n\' | termux-change-repo\n" >> $SETUP_SCRIPT
 printf "\n" >> $SETUP_SCRIPT
 printf "yes Y | pkg upgrade\n" >> $SETUP_SCRIPT
 printf "pkg update\n" >> $SETUP_SCRIPT
-printf "yes Y | pkg install git openssh vim zsh python python-pip\n" >> $SETUP_SCRIPT
+printf "yes Y | pkg install git openssh vim zsh python python-pip ffmpeg\n" >> $SETUP_SCRIPT
 printf "chsh -s zsh\n" >> $SETUP_SCRIPT
 printf "export ZIM_HOME=$HOME_PATH/.zim\n" >> $SETUP_SCRIPT
 printf "curl -fsSL https://raw.githubusercontent.com/zimfw/install/master/install.zsh | /data/data/$PACKAGE_NAME/files/usr/bin/zsh\n" >> $SETUP_SCRIPT
@@ -105,6 +105,7 @@ printf "\n" >> $SETUP_SCRIPT
 printf "# Delete out zsh-syntax-highlighting because it throws errors for whatever reason\n" >> $SETUP_SCRIPT
 printf "sed -i \'/zsh-syntax-highlighting/d\' ~/.zimrc\n" >> $SETUP_SCRIPT # Straight up delete the line
 printf "\n" >> $SETUP_SCRIPT
+
 printf "# Install fzf\n" >> $SETUP_SCRIPT
 printf "git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf\n" >> $SETUP_SCRIPT
 printf "yes | sh -c ~/.fzf/install\n" >> $SETUP_SCRIPT
