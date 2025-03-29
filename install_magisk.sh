@@ -17,7 +17,7 @@ wget -O $NAME $MAGISK_DOWNLOAD_URL
 
 adb root
 # install
-adb install $NAME
+adb install -r $NAME
 
 # Get lineageos build date and version
 DEVICE_NAME=$(adb shell getprop ro.build.product)
@@ -61,8 +61,9 @@ adb shell am start -n com.topjohnwu.magisk/.ui.MainActivity
 printf "Patch boot.img in the Magisk app then press any key to continue.\n"
 read $RESPONSE
 
-MAGISK_IMAGE=$(adb shell ls $DOWNLOAD_DIRECTORY | grep -i magisk)
+MAGISK_IMAGE=$(adb shell ls -t $DOWNLOAD_DIRECTORY | grep -m 1 magisk_patched)
 printf "Magisk image is %s\n" $MAGISK_IMAGE
+printf "Path is %s\n" $DOWNLOAD_DIRECTORY/$MAGISK_IMAGE
 adb pull $DOWNLOAD_DIRECTORY/$MAGISK_IMAGE .
 
 # Clean up the images
@@ -74,6 +75,8 @@ adb reboot bootloader
 sleep 1
 fastboot flash boot $MAGISK_IMAGE
 sleep 1
+# This next step is optional, also it could potentially wipe all my data
+# according to the doc.
 fastboot flash vbmeta --disable-verity --disable-verification $VBMETA_IMG
 sleep 1
 fastboot reboot
