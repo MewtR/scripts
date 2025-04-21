@@ -1,5 +1,10 @@
 #!/usr/bin/sh
 
+ARCH=arm64
+if [ $# -eq 1 ]; then
+    ARCH=$1
+fi
+
 # local install directory
 INSTALL_DIRECTORY=~/tmp/frida_install
 
@@ -13,11 +18,11 @@ REPO=$FRIDA/$FRIDA
 TAG=$(curl -s https://api.github.com/repos/${REPO}/releases/latest | jq -r '.tag_name')
 printf "tag name: %s\n" $TAG
 
-NAME=$(curl -s https://api.github.com/repos/$REPO/releases/latest | jq -r '.assets[] | select(.name | startswith("frida-server")) | select(.name | endswith("android-arm64.xz")) | .name')
-printf "Downloading %s\n" $NAME 
+NAME=$(curl -s https://api.github.com/repos/$REPO/releases/latest | jq -r --arg arch "$ARCH" '.assets[] | select(.name | startswith("frida-server")) | select(.name | endswith("android-\($arch).xz")) | .name')
+printf "Downloading %s\n" $NAME
 
 
-FRIDA_DOWNLOAD_URL=$(curl -s https://api.github.com/repos/$REPO/releases/latest | jq -r '.assets[] | select(.name | startswith("frida-server")) | select(.name | endswith("android-arm64.xz")) | .browser_download_url')
+FRIDA_DOWNLOAD_URL=$(curl -s https://api.github.com/repos/$REPO/releases/latest | jq -r --arg arch "$ARCH" '.assets[] | select(.name | startswith("frida-server")) | select(.name | endswith("android-\($arch).xz")) | .browser_download_url')
 printf "Download url: %s\n" $FRIDA_DOWNLOAD_URL
 
 wget -O $NAME $FRIDA_DOWNLOAD_URL
