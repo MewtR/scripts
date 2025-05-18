@@ -15,7 +15,7 @@ adb root
 #adb shell chmod 664 /system/etc/security/cacerts/$FILE
 #adb reboot
 
-DESTINATION_DIRECTORY=/tmp
+DESTINATION_DIRECTORY=/data/local/tmp
 INSTALL_SCRIPT=install_system_cert.sh
 INSTALL_SCRIPT_PATH=$DESTINATION_DIRECTORY/install_system_cert.sh
 
