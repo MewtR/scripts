@@ -55,10 +55,23 @@ unxz --force $FRIDA_SERVER_XZ
 # install directory on my phone
 FRIDA_INSTALL_PATH=/data/local/tmp/$FRIDA_SERVER
 
-adb root
+ADB_ROOT=$(adb root)
+
 adb push $FRIDA_SERVER $FRIDA_INSTALL_PATH
-adb shell chmod 755 $FRIDA_INSTALL_PATH
-adb shell $FRIDA_INSTALL_PATH &
+if [[ $ADB_ROOT == "adbd cannot run as root in production builds" ]]; then
+    # Look for the su binary
+    SU=$(adb shell which su)
+    if [[ $? -ne 0 ]]; then
+        printf "Root needed to install frida\n"
+        adb shell rm $FRIDA_INSTALL_PATH
+        exit 1
+    fi
+    adb shell su -c chmod 755 $FRIDA_INSTALL_PATH
+    adb shell su -c $FRIDA_INSTALL_PATH &
+else
+    adb shell chmod 755 $FRIDA_INSTALL_PATH
+    adb shell $FRIDA_INSTALL_PATH &
+fi
 
 printf "Frida is running...\n"
 sleep 1
