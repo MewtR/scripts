@@ -7,7 +7,18 @@ fi
 
 PATHTOFILE=$1
 FILE=$(basename $PATHTOFILE)
-adb root
+SU_COMMAND=
+
+ADB_ROOT=$(adb root)
+if [[ $ADB_ROOT == "adbd cannot run as root in production builds" ]]; then
+    # Look for the su binary
+    SU_PATH=$(adb shell which su)
+    SU_COMMAND="$SU_PATH -c"
+    if [[ $? -ne 0 ]]; then
+        printf "Root needed to install mitmproxy certs\n"
+        exit 1
+    fi
+fi
 
 # The following doesn't work on Android 14
 #adb remount
@@ -112,11 +123,11 @@ printf "\n\n" >> $INSTALL_SCRIPT
 printf "printf \"System certificate injected\"\n" >> $INSTALL_SCRIPT
 
 adb push $INSTALL_SCRIPT $INSTALL_SCRIPT_PATH
-adb shell exec /system/bin/sh $INSTALL_SCRIPT_PATH
+adb shell $SU_COMMAND exec /system/bin/sh $INSTALL_SCRIPT_PATH
 
 # Clean up
 rm $INSTALL_SCRIPT
-adb shell rm $INSTALL_SCRIPT_PATH
-adb shell rm $DESTINATION_DIRECTORY/$FILE
+adb shell $SU_COMMAND rm $INSTALL_SCRIPT_PATH
+adb shell $SU_COMMAND rm $DESTINATION_DIRECTORY/$FILE
 
 printf "Will it wait?\n"
